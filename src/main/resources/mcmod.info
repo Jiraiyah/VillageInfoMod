@@ -1,0 +1,16 @@
+[
+{
+  "modid": "villageinfo",
+  "name": "Village Info",
+  "description": "A mod that will desplay many useful information for villages.",
+  "version": "mod_version",
+  "mcversion": "minecraft_version",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Jiraiyah"],
+  "credits": "To many people in minecraft forge irc that helped me figure how to make this work, Ordinasti, tterrag, gigaherz, masa paleoCrafter and many others.",
+  "logoFile": "assets/villageinfo/textures/logo/logo.png",
+  "screenshots": [],
+  "dependencies": ["MinecraftForge"]
+}
+]

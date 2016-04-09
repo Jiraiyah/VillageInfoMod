@@ -1,0 +1,139 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        mavenLocal()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'org.ajoberstar:gradle-git:0.10.1'
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+    }
+}
+
+plugins {
+    id 'net.minecraftforge.gradle.forge' version '2.0.2'
+    id 'com.matthewprenger.cursegradle' version '1.0.7'
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+//********************************************************************************************************************************
+//************************************************************* VERSIONING ************************************************************
+//********************************************************************************************************************************
+
+def doCmd(s) {
+    try {
+        s.execute(null, file('.')).text.trim()
+    } catch(e) {
+        [text:'null']
+    }
+}
+version = "${minecraft_version}"
+ext.gitRevision = doCmd('git rev-list --count HEAD')
+ext.gitHash = doCmd('git rev-parse --short HEAD')
+version += ".$gitRevision"
+
+//********************************************************************************************************************************
+//************************************************************* CURSE ************************************************************
+//********************************************************************************************************************************
+
+//curseforge {
+//    apiKey = project.curseforge_key_villageinfo
+//    project {
+//        id = project.curse_projectId
+//        changelog = file('changelog.txt')
+//        releaseType = 'alpha'
+//    }
+//}
+
+//********************************************************************************************************************************
+//*********************************************************** License ************************************************************
+//********************************************************************************************************************************
+apply plugin: 'license'
+
+license
+        {
+            ext.name = project.name
+            ext.organization = project.organization
+            ext.url = project.url
+            ext.year = project.inceptionYear
+            exclude '**/*.info'
+            exclude '**/*.json'
+            exclude '**/*.ma'
+            exclude '**/*.mb'
+            exclude '**/*.png'
+            exclude '**/*.obj'
+            exclude '**/*.lang'
+            exclude '**/*.cfg'
+            header new File(projectDir, 'HEADER.txt')
+            sourceSets = project.sourceSets
+            ignoreFailures = false
+            strictCheck = true
+            mapping { javascript='JAVADOC_STYLE'}
+        }
+
+//********************************************************************************************************************************
+//*********************************************************** COMPATIBILITY ********************************************************
+//********************************************************************************************************************************
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+//********************************************************************************************************************************
+//************************************************************ MINECRAFT *********************************************************
+//********************************************************************************************************************************
+
+group= "${group}"
+archivesBaseName = "${name}"
+
+minecraft
+        {
+            version = minecraft_version + '-' + forge_version
+            runDir = 'run'
+            mappings = project.mappings
+            useDepAts = true
+
+            replaceIn "references/Reference.java"
+            replace "@VERSION@", "${mod_version}.${System.getenv("BUILD_NUMBER") ?: 0}"
+
+            replaceIn 'references/Reference.java'
+            if (project.hasProperty('st_keystore_fingerprint'))
+            {
+                replace '@FINGERPRINT@', project.st_keystory_fingerprint
+            }
+        }
+
+//********************************************************************************************************************************
+//************************************************************ RESOURCES *********************************************************
+//********************************************************************************************************************************
+
+processResources
+        {
+            inputs.property "version", project.version
+            inputs.property "mcversion", minecraft_version
+
+            from 'LICENSE.txt'
+
+            from(sourceSets.main.resources.srcDirs)
+                    {
+                        include '**/*.info'
+                        include '**/*.properties'
+
+                        expand ([
+                                'mod_version': project.version,
+                                'forge_version': forge_version,
+                                'minecraft_version': minecraft_version,
+                        ])
+                    }
+
+            from(sourceSets.main.resources.srcDirs)
+                    {
+                        exclude '**/*.info'
+                        exclude '**/*.properties'
+                    }
+        }
