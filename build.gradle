@@ -26,19 +26,17 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 //************************************************************* VERSIONING ************************************************************
 //********************************************************************************************************************************
 
-//def doCmd(s) {
-//    try {
-//        s.execute(null, file('.')).text.trim()
-//    } catch(e) {
-//        println e.message
-//        [text:'null']
-//    }
-//}
-//version = "${minecraft_version}"
-//ext.gitRevision = doCmd('git rev-list --count HEAD')
-//ext.gitHash = doCmd('git rev-parse --short HEAD')
-//version += ".$gitRevision"
-version = "${name}-${minecraft_version}-1.0"
+def doCmd(s) {
+    try {
+        s.execute(null, file('.')).text.trim()
+    } catch(e) {
+        'unspecified'
+    }
+}
+version = "${minecraft_version}"
+ext.gitRevision = doCmd('git rev-list --count HEAD')
+ext.gitHash = doCmd('git rev-parse --short HEAD')
+version += "-$gitRevision"
 //********************************************************************************************************************************
 //************************************************************* CURSE ************************************************************
 //********************************************************************************************************************************
@@ -55,28 +53,28 @@ curseforge {
 //********************************************************************************************************************************
 //*********************************************************** License ************************************************************
 //********************************************************************************************************************************
-//apply plugin: 'license'
+apply plugin: 'license'
 
-//license
-//        {
-//            ext.name = project.name
-//            ext.organization = project.organization
-//            ext.url = project.url
-//            ext.year = project.inceptionYear
-//            exclude '**/*.info'
-//            exclude '**/*.json'
-//            exclude '**/*.ma'
-//            exclude '**/*.mb'
-//            exclude '**/*.png'
-//            exclude '**/*.obj'
-//            exclude '**/*.lang'
-//            exclude '**/*.cfg'
-//            header new File(projectDir, 'HEADER.txt')
-//            sourceSets = project.sourceSets
-//            ignoreFailures = false
-//            strictCheck = true
-//            mapping { javascript='JAVADOC_STYLE'}
-//        }
+license
+{
+    ext.name = project.name
+    ext.organization = project.organization
+    ext.url = project.url
+    ext.year = project.inceptionYear
+    exclude '**/*.info'
+    exclude '**/*.json'
+    exclude '**/*.ma'
+    exclude '**/*.mb'
+    exclude '**/*.png'
+    exclude '**/*.obj'
+    exclude '**/*.lang'
+    exclude '**/*.cfg'
+    header new File(projectDir, 'HEADER.txt')
+    sourceSets = project.sourceSets
+    ignoreFailures = false
+    strictCheck = true
+    mapping { javascript='JAVADOC_STYLE'}
+}
 
 //********************************************************************************************************************************
 //*********************************************************** COMPATIBILITY ********************************************************

@@ -1,5 +1,7 @@
 /**
- * Copyright 2016 Village Info (Jiraiyah)
+ * Copyright 2016 VillageInfoMod (Jiraiyah)
+ *
+ * project link : http://minecraft.curseforge.com/projects/village-info
  *
  * Licensed under The MIT License (MIT);
  * you may not use this file except in compliance with the License.
@@ -15,6 +17,7 @@
  */
 package jiraiyah.villageinfo;
 
+import jiraiyah.villageinfo.infrastructure.Config;
 import jiraiyah.villageinfo.proxies.CommonProxy;
 import jiraiyah.villageinfo.references.Reference;
 import net.minecraftforge.fml.common.Mod;
@@ -28,9 +31,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid = Reference.MOD_ID, version = Reference.VERSION, dependencies = Reference.DEPENDENCIES, name = Reference.MOD_NAME)
 public class VillageInfo
 {
-    @Mod.Instance(Reference.MOD_ID)
-    public static VillageInfo INSTANCE;
-
     @SidedProxy(clientSide = Reference.CLIENT_PROXY, serverSide = Reference.COMMON_PROXY)
     public static CommonProxy PROXY;
 
@@ -38,6 +38,7 @@ public class VillageInfo
     public void preInit(FMLPreInitializationEvent event)
     {
         PROXY.preInit(event);
+        Config.loadConfigsFromFile(event.getSuggestedConfigurationFile());
     }
 
     @EventHandler

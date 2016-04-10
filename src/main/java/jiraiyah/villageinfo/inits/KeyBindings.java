@@ -1,5 +1,7 @@
 /**
- * Copyright 2016 Village Info (Jiraiyah)
+ * Copyright 2016 VillageInfoMod (Jiraiyah)
+ *
+ * project link : http://minecraft.curseforge.com/projects/village-info
  *
  * Licensed under The MIT License (MIT);
  * you may not use this file except in compliance with the License.
@@ -31,6 +33,7 @@ public class KeyBindings
 	public static KeyBinding VILLAGE_DATA_DOORS;
 	public static KeyBinding VILLAGE_DATA_INFO;
 	public static KeyBinding VILLAGE_DATA_CENTER;
+	public static KeyBinding SPAWNCHUNK;
 
 	public static void register()
 	{
@@ -42,6 +45,7 @@ public class KeyBindings
 		VILLAGE_DATA_INFO = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatainfo", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_4, Reference.MOD_ID.toLowerCase() + ".key.categories");
 		VILLAGE_DATA_CENTER = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatacenter", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_5, Reference.MOD_ID.toLowerCase() + ".key.categories");
 		VILLAGE_DATA_SPHERE = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatasphere", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_6, Reference.MOD_ID.toLowerCase() + ".key.categories");
+		SPAWNCHUNK = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.spawnchunk", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_S, Reference.MOD_ID.toLowerCase() + ".key.categories");
 
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA);
 
@@ -51,6 +55,7 @@ public class KeyBindings
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA_INFO);
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA_CENTER);
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA_SPHERE);
+		ClientRegistry.registerKeyBinding(SPAWNCHUNK);
 
 		//Log.info("=========================================================> Registered Key Bindings");
 	}

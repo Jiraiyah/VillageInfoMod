@@ -1,5 +1,7 @@
 /**
- * Copyright 2016 Village Info (Jiraiyah)
+ * Copyright 2016 VillageInfoMod (Jiraiyah)
+ *
+ * project link : http://minecraft.curseforge.com/projects/village-info
  *
  * Licensed under The MIT License (MIT);
  * you may not use this file except in compliance with the License.
@@ -16,7 +18,7 @@
 package jiraiyah.villageinfo.network;
 
 import io.netty.buffer.ByteBuf;
-import jiraiyah.villageinfo.events.VillageDataCollector;
+import jiraiyah.villageinfo.events.WorldDataCollector;
 import jiraiyah.villageinfo.inits.NetworkMessages;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -24,15 +26,15 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.util.UUID;
 
-public class VillageInfoPlayerMessage implements IMessageHandler<VillageInfoPlayerMessage.Packet, IMessage>
+public class VillagePlayerMessage implements IMessageHandler<VillagePlayerMessage.Packet, IMessage>
 {
 	@Override
-	public IMessage onMessage (VillageInfoPlayerMessage.Packet message, MessageContext ctx )
+	public IMessage onMessage (VillagePlayerMessage.Packet message, MessageContext ctx )
 	{
 		if (message.adding)
-			VillageDataCollector.addPlayerToList(message.playerId);
-		else if(!message.adding)
-			VillageDataCollector.removePlayerFromList(message.playerId);
+			WorldDataCollector.addPlayerToVillageList(message.playerId);
+		else
+			WorldDataCollector.removePlayerFromVillageList(message.playerId);
 		return null;
 	}
 
@@ -42,7 +44,7 @@ public class VillageInfoPlayerMessage implements IMessageHandler<VillageInfoPlay
 		NetworkMessages.network.sendToServer(packet);
 	}
 
-	@SuppressWarnings("WeakerAccess")
+	@SuppressWarnings({"WeakerAccess", "unused"})
 	public static class Packet implements IMessage
 	{
 		public UUID playerId;

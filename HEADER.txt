@@ -1,4 +1,6 @@
-Copyright ${year} ${organization}
+Copyright ${year} ${name} (${organization})
+
+project link : ${url}
 
 Licensed under The MIT License (MIT);
 you may not use this file except in compliance with the License.

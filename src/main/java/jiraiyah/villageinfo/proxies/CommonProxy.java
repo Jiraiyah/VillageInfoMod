@@ -1,5 +1,7 @@
 /**
- * Copyright 2016 Village Info (Jiraiyah)
+ * Copyright 2016 VillageInfoMod (Jiraiyah)
+ *
+ * project link : http://minecraft.curseforge.com/projects/village-info
  *
  * Licensed under The MIT License (MIT);
  * you may not use this file except in compliance with the License.

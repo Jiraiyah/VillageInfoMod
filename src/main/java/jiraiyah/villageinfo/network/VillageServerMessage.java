@@ -1,5 +1,7 @@
 /**
- * Copyright 2016 Village Info (Jiraiyah)
+ * Copyright 2016 VillageInfoMod (Jiraiyah)
+ *
+ * project link : http://minecraft.curseforge.com/projects/village-info
  *
  * Licensed under The MIT License (MIT);
  * you may not use this file except in compliance with the License.
@@ -30,10 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class VillageIndicatorMessage implements IMessageHandler<VillageIndicatorMessage.Packet, IMessage>
+public class VillageServerMessage implements IMessageHandler<VillageServerMessage.Packet, IMessage>
 {
 	@Override
-	public IMessage onMessage ( VillageIndicatorMessage.Packet message, MessageContext ctx )
+	public IMessage onMessage (VillageServerMessage.Packet message, MessageContext ctx )
 	{
         /*Minecraft.getMinecraft().addScheduledTask( () ->
                 ((VillageIndicatorTile)Minecraft
@@ -63,7 +65,7 @@ public class VillageIndicatorMessage implements IMessageHandler<VillageIndicator
 		NetworkMessages.network.sendTo(packet, playerMP);
 	}
 
-	@SuppressWarnings("WeakerAccess")
+	@SuppressWarnings({"WeakerAccess", "unused"})
 	public static class Packet implements IMessage
 	{
 		public List<VillageData> data = new ArrayList<>();

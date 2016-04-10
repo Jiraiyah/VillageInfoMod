@@ -1,5 +1,7 @@
 /**
- * Copyright 2016 Village Info (Jiraiyah)
+ * Copyright 2016 VillageInfoMod (Jiraiyah)
+ *
+ * project link : http://minecraft.curseforge.com/projects/village-info
  *
  * Licensed under The MIT License (MIT);
  * you may not use this file except in compliance with the License.
@@ -15,8 +17,8 @@
  */
 package jiraiyah.villageinfo.inits;
 
-import jiraiyah.villageinfo.network.VillageIndicatorMessage;
-import jiraiyah.villageinfo.network.VillageInfoPlayerMessage;
+import jiraiyah.villageinfo.network.VillageServerMessage;
+import jiraiyah.villageinfo.network.VillagePlayerMessage;
 import jiraiyah.villageinfo.references.Reference;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,14 +30,14 @@ public class NetworkMessages
 	public static void register()
 	{
 		network = new SimpleNetworkWrapper( Reference.MOD_ID );
-		network.registerMessage( VillageIndicatorMessage.class, VillageIndicatorMessage.Packet.class, nextId(), Side.CLIENT );
-		network.registerMessage( VillageInfoPlayerMessage.class, VillageInfoPlayerMessage.Packet.class, nextId(), Side.SERVER );
+		network.registerMessage( VillageServerMessage.class, VillageServerMessage.Packet.class, nextId(), Side.CLIENT );
+		network.registerMessage( VillagePlayerMessage.class, VillagePlayerMessage.Packet.class, nextId(), Side.SERVER );
 		//Log.info("=========================================================> Registered Network Messages");
 	}
 
 	private static int ID = 0;
 
-	public static int nextId ()
+	private static int nextId()
 	{
 		return ID++;
 	}

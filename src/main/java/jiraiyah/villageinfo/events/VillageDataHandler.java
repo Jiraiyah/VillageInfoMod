@@ -1,5 +1,7 @@
 /**
- * Copyright 2016 Village Info (Jiraiyah)
+ * Copyright 2016 VillageInfoMod (Jiraiyah)
+ *
+ * project link : http://minecraft.curseforge.com/projects/village-info
  *
  * Licensed under The MIT License (MIT);
  * you may not use this file except in compliance with the License.
@@ -15,9 +17,10 @@
  */
 package jiraiyah.villageinfo.events;
 
+import jiraiyah.villageinfo.infrastructure.Config;
 import jiraiyah.villageinfo.infrastructure.VillageData;
 import jiraiyah.villageinfo.inits.KeyBindings;
-import jiraiyah.villageinfo.network.VillageInfoPlayerMessage;
+import jiraiyah.villageinfo.network.VillagePlayerMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -41,7 +44,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
-@SuppressWarnings({"unused", "WeakerAccess", "SuspiciousNameCombination"})
+@SuppressWarnings({"unused", "SuspiciousNameCombination"})
 public class VillageDataHandler
 {
 	private boolean showVillages;
@@ -53,8 +56,7 @@ public class VillageDataHandler
 	private boolean showVillagesGolem = true;
 
 
-	public static List<VillageData> villageDataList = new ArrayList<>();
-
+	private static List<VillageData> villageDataList = new ArrayList<>();
 	private static final float PI = (float) Math.PI;
 	private static final float DEG2RAD = PI/180;
 
@@ -76,12 +78,12 @@ public class VillageDataHandler
 		{
 			double distance = Math.sqrt(playerPos.squareDistanceTo(data.center.getX(), data.center.getY(), data.center.getZ()));
 			double scaleFactor = -0.015f * distance / 4.209f;
-			//Log.info("=================== Distance = " + distance); //17.723549165908132
+			boolean canSpaw = data.doorPositions.size() > 20;
 			GlStateManager.pushMatrix();
 			{
-				GlStateManager.translate(-0.5f + data.center.getX() - plX,//x - 0.5f + data.center.getX() - pos.getX(),
-						-0.5f + data.center.getY() - plY,//y - 0.5f + data.center.getY() - pos.getY(),
-						-0.5f + data.center.getZ() - plZ);//z - 0.5f + data.center.getZ() - pos.getZ());
+				GlStateManager.translate(0.5f + data.center.getX() - plX,
+						0.5f + data.center.getY() - plY,
+						0.5f + data.center.getZ() - plZ);
 				GlStateManager.glLineWidth(1);
 				GlStateManager.disableLighting();
 				GlStateManager.disableTexture2D();
@@ -90,15 +92,15 @@ public class VillageDataHandler
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				{
 					if (showVillagesSpehere)
-						drawBorderSpehere(data.radius, buffer, new Vector4f(1f, 0f, 1f, 1f));
+						drawBorderSpehere(data.radius, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 1f, 1f) : new Vector4f(1f, 0f, 1f, 1f));
 					if (showVillagesDoors)
-						drawDoors(data.center, data.doorPositions, buffer, new Vector4f(1f, 1f, 1f, 1f));
+						drawDoors(data.center, data.doorPositions, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : new Vector4f(1f, 1f, 1f, 1f));
 					if (showVillagesBorder)
-						drawBorderSquare(data.radius, buffer, new Vector4f(1f, 1f, 0f, 0.5f));
+						drawBorderSquare(data.radius, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : new Vector4f(1f, 1f, 0f, 0.5f));
 					if (showVillagesGolem)
-						drawGolemSpawn(buffer, new Vector4f(0f, 1f, 0f, 1f));
+						drawGolemSpawn(buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : (canSpaw ? new Vector4f(0f, 1f, 0f, 1f) : new Vector4f(0.8f, 0f, 0f, 1f)));
 					if (showVillagesCenter)
-						drawCenter(buffer, new Vector4f(1f, 0f, 0f, 1f));
+						drawCenter(buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : new Vector4f(1f, 0f, 0f, 1f));
 					if (showVillagesInfo)
 					{
 						GlStateManager.translate(0f, 1.5f, 0f);
@@ -111,7 +113,6 @@ public class VillageDataHandler
 						GlStateManager.enableTexture2D();
 						drawTextInfo("Villagers : " + data.villagerCount, 1, scaleFactor, fontrenderer);
 						drawTextInfo("Doors : " + data.doorPositions.size(), 2, scaleFactor, fontrenderer);
-						boolean canSpaw = data.doorPositions.size() > 20;
 						drawTextInfo("Max Golem : " + (canSpaw ? (TextFormatting.GREEN + Integer.toString(data.villagerCount / 10)) : TextFormatting.DARK_RED + "" + TextFormatting.BOLD + "0"), 3, scaleFactor, fontrenderer);
 						drawTextInfo("Reputation : " + data.reputation, 4, scaleFactor, fontrenderer);
 						GlStateManager.disableBlend();
@@ -201,9 +202,9 @@ public class VillageDataHandler
 			buffer.pos(0, 0, 0)
 					.color(color.x, color.y, color.z, color.w)
 					.endVertex();
-			buffer.pos(doorPos.getX() - center.getX() + 1,
+			buffer.pos(doorPos.getX() - center.getX() ,
 					doorPos.getY() - center.getY() + 1,
-					doorPos.getZ() - center.getZ() + 1)
+					doorPos.getZ() - center.getZ() )
 					.color(color.x, color.y, color.z, color.w)
 					.endVertex();
 		}
@@ -233,7 +234,7 @@ public class VillageDataHandler
 		for (int b = 0; b <= upper; b += space)
 		{
 			buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-			for (int a = -90; a <= upper2; a++)//=space)
+			for (int a = -90; a <= upper2; a++)
 			{
 				x = radius * Math.sin((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
 				z = radius * Math.cos((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
@@ -247,7 +248,7 @@ public class VillageDataHandler
 		for (int b = 0; b <= upper; b += space)
 		{
 			buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-			for (int a = -90; a <= upper2; a++)//=space)
+			for (int a = -90; a <= upper2; a++)
 			{
 				x = radius * Math.sin((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
 				z = radius * Math.cos((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
@@ -265,8 +266,7 @@ public class VillageDataHandler
 		if(KeyBindings.VILLAGE_DATA.isPressed())
 		{
 			showVillages = !showVillages;
-			VillageInfoPlayerMessage.sendMessage(Minecraft.getMinecraft().thePlayer.getUniqueID(), showVillages);
-			//Log.info("=================> Village toggle data key pressed");
+			VillagePlayerMessage.sendMessage(Minecraft.getMinecraft().thePlayer.getUniqueID(), showVillages);
 		}
 		if (KeyBindings.VILLAGE_DATA_BORDER.isPressed())
 			showVillagesBorder = !showVillagesBorder;

@@ -1,5 +1,7 @@
 /**
- * Copyright 2016 Village Info (Jiraiyah)
+ * Copyright 2016 VillageInfoMod (Jiraiyah)
+ *
+ * project link : http://minecraft.curseforge.com/projects/village-info
  *
  * Licensed under The MIT License (MIT);
  * you may not use this file except in compliance with the License.
@@ -15,14 +17,14 @@
  */
 package jiraiyah.villageinfo.inits;
 
-import jiraiyah.villageinfo.events.VillageDataCollector;
+import jiraiyah.villageinfo.events.WorldDataCollector;
 import net.minecraftforge.common.MinecraftForge;
 
 public class CommonEventRegister
 {
 	public static void register()
 	{
-		MinecraftForge.EVENT_BUS.register(new VillageDataCollector());
+		MinecraftForge.EVENT_BUS.register(new WorldDataCollector());
 		//Log.info("=========================================================> Registered Common Events");
 	}
 }
