@@ -91,6 +91,8 @@ public class VillageDataHandler
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				{
+					// TODO : per village coloring
+					// TODO : semi solid cube for some parts
 					if (showVillagesSpehere)
 						drawBorderSpehere(data.radius, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 1f, 1f) : new Vector4f(1f, 0f, 1f, 1f));
 					if (showVillagesDoors)
@@ -160,24 +162,24 @@ public class VillageDataHandler
 	private void drawGolemSpawn(VertexBuffer buffer, Vector4f color)
 	{
 		buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-		buffer.pos(-8.5f, -3, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, -3, 8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(8.5f, -3, 8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(8.5f, -3, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, -3, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, 3, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, 3, 8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(8.5f, 3, 8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(8.5f, 3, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, 3, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(-8.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(-8.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(7.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(7.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(-8.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(-8.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(-8.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(7.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(7.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(-8.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
 		Tessellator.getInstance().draw();
 		buffer.begin(GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-		buffer.pos(-8.5f, -3, 8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, 3, 8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(8.5f, -3, 8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(8.5f, 3, 8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(8.5f, -3, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(8.5f, 3, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(-8.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(-8.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(7.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(7.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(7.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+		buffer.pos(7.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
 		Tessellator.getInstance().draw();
 	}
 
@@ -213,6 +215,7 @@ public class VillageDataHandler
 
 	private void drawBorderSpehere(int radius, VertexBuffer buffer, Vector4f color)
 	{
+		// TODO : another, clearner algorithm to draw sphere !
 		int space = 5;
 		int upper = 90;
 		int upper2 = 360 - space;

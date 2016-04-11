@@ -81,14 +81,6 @@ public class WorldDataCollector
 		}
 	}
 
-	public static void getSpawnChunks(UUID player)
-	{
-		if (spawnPoint == null)
-			spawnPoint = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getSpawnPoint();
-		if (spawnPoint != null)
-			WorldSpawnHandler.spawnPoint = spawnPoint;
-	}
-
 	private void resetVillageDataList()
 	{
 		World world = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld();

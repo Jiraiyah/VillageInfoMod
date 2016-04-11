@@ -72,7 +72,7 @@ public class Config
 		prop.setComment("If set to true, every graphical representation for single village will be in same color, but change per village base. If you have single village, set it to false for color change in the village information.");
 		perVillageColor = prop.getBoolean();
 
-		prop = conf.get(CATEGORY_GENERIC, "spawnChunkShowDistance", 140).setRequiresMcRestart(false);
+		prop = conf.get(CATEGORY_GENERIC, "spawnChunkShowDistance", 250).setRequiresMcRestart(false);
 		prop.setComment("Distance from border of the spawn chunks that graphics starts showing up, should be positive (obviously).");
 		spawnChunkShowDistance = prop.getInt();
 

@@ -45,7 +45,7 @@ public class KeyBindings
 		VILLAGE_DATA_INFO = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatainfo", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_4, Reference.MOD_ID.toLowerCase() + ".key.categories");
 		VILLAGE_DATA_CENTER = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatacenter", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_5, Reference.MOD_ID.toLowerCase() + ".key.categories");
 		VILLAGE_DATA_SPHERE = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatasphere", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_6, Reference.MOD_ID.toLowerCase() + ".key.categories");
-		SPAWNCHUNK = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.spawnchunk", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_S, Reference.MOD_ID.toLowerCase() + ".key.categories");
+		SPAWNCHUNK = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.spawnchunk", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.MOD_ID.toLowerCase() + ".key.categories");
 
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA);
 
