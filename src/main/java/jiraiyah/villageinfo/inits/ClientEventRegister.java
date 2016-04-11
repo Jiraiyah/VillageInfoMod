@@ -17,6 +17,7 @@
  */
 package jiraiyah.villageinfo.inits;
 
+import jiraiyah.villageinfo.events.KeyBindingHandler;
 import jiraiyah.villageinfo.events.VillageDataHandler;
 import jiraiyah.villageinfo.events.WorldSpawnHandler;
 import net.minecraftforge.common.MinecraftForge;
@@ -27,6 +28,7 @@ public class ClientEventRegister
 	{
 		MinecraftForge.EVENT_BUS.register(new VillageDataHandler());
 		MinecraftForge.EVENT_BUS.register(new WorldSpawnHandler());
+		MinecraftForge.EVENT_BUS.register(new KeyBindingHandler());
 		//Log.info("=========================================================> Registered Client Events");
 	}
 }

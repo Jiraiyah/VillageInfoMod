@@ -17,10 +17,9 @@
  */
 package jiraiyah.villageinfo.events;
 
+import jiraiyah.villageinfo.VillageInfo;
 import jiraiyah.villageinfo.infrastructure.Config;
 import jiraiyah.villageinfo.infrastructure.VillageData;
-import jiraiyah.villageinfo.inits.KeyBindings;
-import jiraiyah.villageinfo.network.VillagePlayerMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -34,9 +33,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.vecmath.Vector4f;
 import java.util.ArrayList;
@@ -47,23 +43,15 @@ import static org.lwjgl.opengl.GL11.*;
 @SuppressWarnings({"unused", "SuspiciousNameCombination"})
 public class VillageDataHandler
 {
-	private boolean showVillages;
-	private boolean showVillagesDoors = true;
-	private boolean showVillagesBorder;
-	private boolean showVillagesSpehere;
-	private boolean showVillagesCenter;
-	private boolean showVillagesInfo;
-	private boolean showVillagesGolem = true;
-
-
 	private static List<VillageData> villageDataList = new ArrayList<>();
 	private static final float PI = (float) Math.PI;
 	private static final float DEG2RAD = PI/180;
 
+
 	@SubscribeEvent
 	public void renderWorldLastEvent(RenderWorldLastEvent event)
 	{
-		if (!showVillages || villageDataList == null || villageDataList.size() == 0)
+		if (!VillageInfo.showVillages || villageDataList == null || villageDataList.size() == 0)
 			return;
 		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
 		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
@@ -87,23 +75,24 @@ public class VillageDataHandler
 				GlStateManager.glLineWidth(1);
 				GlStateManager.disableLighting();
 				GlStateManager.disableTexture2D();
-				GlStateManager.disableDepth();
+				if(VillageInfo.disableDepth)
+					GlStateManager.disableDepth();
+				GlStateManager.disableCull();
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				{
 					// TODO : per village coloring
-					// TODO : semi solid cube for some parts
-					if (showVillagesSpehere)
+					if (VillageInfo.villageSphere)
 						drawBorderSpehere(data.radius, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 1f, 1f) : new Vector4f(1f, 0f, 1f, 1f));
-					if (showVillagesDoors)
+					if (VillageInfo.villageDoors)
 						drawDoors(data.center, data.doorPositions, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : new Vector4f(1f, 1f, 1f, 1f));
-					if (showVillagesBorder)
+					if (VillageInfo.villageBorder)
 						drawBorderSquare(data.radius, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : new Vector4f(1f, 1f, 0f, 0.5f));
-					if (showVillagesGolem)
+					if (VillageInfo.villageGolem)
 						drawGolemSpawn(buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : (canSpaw ? new Vector4f(0f, 1f, 0f, 1f) : new Vector4f(0.8f, 0f, 0f, 1f)));
-					if (showVillagesCenter)
+					if (VillageInfo.villageCenter)
 						drawCenter(buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : new Vector4f(1f, 0f, 0f, 1f));
-					if (showVillagesInfo)
+					if (VillageInfo.villageInfoText)
 					{
 						GlStateManager.translate(0f, 1.5f, 0f);
 						GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
@@ -122,7 +111,9 @@ public class VillageDataHandler
 				}
 				GlStateManager.glLineWidth(1);
 				GlStateManager.disableBlend();
-				GlStateManager.enableDepth();
+				GlStateManager.enableCull();
+				if(VillageInfo.disableDepth)
+					GlStateManager.enableDepth();
 				GlStateManager.enableTexture2D();
 				GlStateManager.enableLighting();
 			}
@@ -137,50 +128,132 @@ public class VillageDataHandler
 
 	private void drawCenter(VertexBuffer buffer, Vector4f color)
 	{
-		buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-		buffer.pos(-0.5, -0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-0.5, -0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(0.5, -0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(0.5, -0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-0.5, -0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-0.5, 0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-0.5, 0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(0.5, 0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(0.5, 0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-0.5, 0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		Tessellator.getInstance().draw();
-		buffer.begin(GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-		buffer.pos(-0.5, -0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-0.5, 0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(0.5, -0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(0.5, 0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(0.5, -0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(0.5, 0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
-		Tessellator.getInstance().draw();
+		if (!VillageInfo.solidDraw)
+		{
+			buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+			buffer.pos(-0.5, -0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5, -0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5, -0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5, -0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5, -0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5, 0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5, 0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5, 0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5, 0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5, 0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			Tessellator.getInstance().draw();
+			buffer.begin(GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+			buffer.pos(-0.5, -0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5, 0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5, -0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5, 0.5, 0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5, -0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5, 0.5, -0.5).color(color.x, color.y, color.z, color.w).endVertex();
+			Tessellator.getInstance().draw();
+		}
+		else
+		{
+			GlStateManager.disableCull();
+			buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+			float opacity = 1f;
+			buffer.pos(-0.5f, 0.5f, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5f, 0.5f, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5f, -0.5f, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5f, -0.5f, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+
+			buffer.pos(-0.5f, 0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5f, 0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5f, -0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5f, -0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+
+			buffer.pos(-0.5f, 0.5, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5f, 0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5f, -0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5f, -0.5, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+
+			buffer.pos(0.5f, 0.5, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5f, 0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5f, -0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5f, -0.5, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+
+			buffer.pos(0.5f, 0.5, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5f, 0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5f, 0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5f, 0.5, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+
+			buffer.pos(0.5f, -0.5, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(0.5f, -0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5f, -0.5, 0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-0.5f, -0.5, -0.5f).color(color.x, color.y, color.z, color.w).endVertex();
+
+			Tessellator.getInstance().draw();
+			GlStateManager.enableCull();
+		}
 	}
 
 	private void drawGolemSpawn(VertexBuffer buffer, Vector4f color)
 	{
-		buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-		buffer.pos(-8.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(7.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(7.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(7.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(7.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		Tessellator.getInstance().draw();
-		buffer.begin(GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-		buffer.pos(-8.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(-8.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(7.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(7.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(7.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		buffer.pos(7.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
-		Tessellator.getInstance().draw();
+		if (!VillageInfo.solidDraw)
+		{
+			buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+			buffer.pos(-8.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-8.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(7.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(7.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-8.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-8.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-8.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(7.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(7.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-8.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			Tessellator.getInstance().draw();
+			buffer.begin(GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+			buffer.pos(-8.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(-8.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(7.5f, -3.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(7.5f, 2.5, 7.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(7.5f, -3.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			buffer.pos(7.5f, 2.5, -8.5f).color(color.x, color.y, color.z, color.w).endVertex();
+			Tessellator.getInstance().draw();
+		}
+		else
+		{
+			GlStateManager.disableCull();
+			buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+			float opacity = 0.11f;
+			buffer.pos(-8.5f, 2.5f, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(7.5f, 2.5f, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(7.5f, -3.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(-8.5f, -3.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+
+			buffer.pos(-8.5f, 2.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(7.5f, 2.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(7.5f, -3.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(-8.5f, -3.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+
+			buffer.pos(-8.5f, 2.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(-8.5f, 2.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(-8.5f, -3.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(-8.5f, -3.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+
+			buffer.pos(7.5f, 2.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(7.5f, 2.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(7.5f, -3.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(7.5f, -3.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+
+			buffer.pos(7.5f, 2.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(7.5f, 2.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(-8.5f, 2.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(-8.5f, 2.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+
+			buffer.pos(7.5f, -3.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(7.5f, -3.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(-8.5f, -3.5, 7.5f).color(color.x, color.y, color.z, opacity).endVertex();
+			buffer.pos(-8.5f, -3.5, -8.5f).color(color.x, color.y, color.z, opacity).endVertex();
+
+			Tessellator.getInstance().draw();
+			GlStateManager.enableCull();
+		}
 	}
 
 	private void drawBorderSquare(int radius, VertexBuffer buffer, Vector4f color)
@@ -260,30 +333,6 @@ public class VillageDataHandler
 			}
 			Tessellator.getInstance().draw();
 		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void onKeyInput(InputEvent.KeyInputEvent event)
-	{
-		if(KeyBindings.VILLAGE_DATA.isPressed())
-		{
-			showVillages = !showVillages;
-			VillagePlayerMessage.sendMessage(Minecraft.getMinecraft().thePlayer.getUniqueID(), showVillages);
-		}
-		if (KeyBindings.VILLAGE_DATA_BORDER.isPressed())
-			showVillagesBorder = !showVillagesBorder;
-		if (KeyBindings.VILLAGE_DATA_DOORS.isPressed())
-			showVillagesDoors = !showVillagesDoors;
-		if (KeyBindings.VILLAGE_DATA_SPHERE.isPressed())
-			showVillagesSpehere = !showVillagesSpehere;
-		if (KeyBindings.VILLAGE_DATA_GOLEM.isPressed())
-			showVillagesGolem = !showVillagesGolem;
-		if (KeyBindings.VILLAGE_DATA_INFO.isPressed())
-			showVillagesInfo = !showVillagesInfo;
-		if (KeyBindings.VILLAGE_DATA_CENTER.isPressed())
-			showVillagesCenter = !showVillagesCenter;
-
 	}
 
 	public static void setVillageData(List<VillageData> data)

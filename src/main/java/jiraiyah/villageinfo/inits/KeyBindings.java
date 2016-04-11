@@ -33,7 +33,9 @@ public class KeyBindings
 	public static KeyBinding VILLAGE_DATA_DOORS;
 	public static KeyBinding VILLAGE_DATA_INFO;
 	public static KeyBinding VILLAGE_DATA_CENTER;
-	public static KeyBinding SPAWNCHUNK;
+	public static KeyBinding SPAWN_CHUNK;
+	public static KeyBinding SOLID_DRAW;
+	public static KeyBinding Disable_DEPTH;
 
 	public static void register()
 	{
@@ -45,7 +47,9 @@ public class KeyBindings
 		VILLAGE_DATA_INFO = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatainfo", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_4, Reference.MOD_ID.toLowerCase() + ".key.categories");
 		VILLAGE_DATA_CENTER = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatacenter", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_5, Reference.MOD_ID.toLowerCase() + ".key.categories");
 		VILLAGE_DATA_SPHERE = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatasphere", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_6, Reference.MOD_ID.toLowerCase() + ".key.categories");
-		SPAWNCHUNK = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.spawnchunk", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.MOD_ID.toLowerCase() + ".key.categories");
+		SOLID_DRAW = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.soliddraw", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_7, Reference.MOD_ID.toLowerCase() + ".key.categories");
+		Disable_DEPTH = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.disabledepth", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_8, Reference.MOD_ID.toLowerCase() + ".key.categories");
+		SPAWN_CHUNK = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.spawnchunk", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.MOD_ID.toLowerCase() + ".key.categories");
 
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA);
 
@@ -55,7 +59,9 @@ public class KeyBindings
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA_INFO);
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA_CENTER);
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA_SPHERE);
-		ClientRegistry.registerKeyBinding(SPAWNCHUNK);
+		ClientRegistry.registerKeyBinding(SPAWN_CHUNK);
+		ClientRegistry.registerKeyBinding(SOLID_DRAW);
+		ClientRegistry.registerKeyBinding(Disable_DEPTH);
 
 		//Log.info("=========================================================> Registered Key Bindings");
 	}

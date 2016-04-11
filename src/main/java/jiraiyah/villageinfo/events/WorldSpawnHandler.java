@@ -17,8 +17,8 @@
  */
 package jiraiyah.villageinfo.events;
 
+import jiraiyah.villageinfo.VillageInfo;
 import jiraiyah.villageinfo.infrastructure.Config;
-import jiraiyah.villageinfo.inits.KeyBindings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
@@ -27,30 +27,23 @@ import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
+import static org.lwjgl.opengl.GL11.*;
 
 @SuppressWarnings("unused")
 public class WorldSpawnHandler
 {
-	private boolean showSpawnChunks;
-	private static BlockPos spawnPoint = null;
-	private boolean chatMessageShown;
+	static boolean showSpawnChunks;
+	static BlockPos spawnPoint = null;
+	static boolean chatMessageShown;
 	private Set<Chunk> spawnChunks = new HashSet<>();
 
 	@SubscribeEvent
@@ -87,72 +80,113 @@ public class WorldSpawnHandler
 			if (maxZ > finalZ)
 				maxZ = finalZ;
 		}
-		GlStateManager.pushMatrix();
+		if (!VillageInfo.solidDraw)
 		{
-			GlStateManager.translate(minX - plX,
-					0 - plY,
-					minZ - plZ);
-			GlStateManager.glLineWidth(5);
-			GlStateManager.disableLighting();
-			GlStateManager.disableTexture2D();
+			GlStateManager.pushMatrix();
 			{
+				GlStateManager.translate(minX - plX,
+						0 - plY,
+						minZ - plZ);
 				GlStateManager.glLineWidth(1);
-				int spacing = 16;
-				for (int y = 0; y <= 256; y += spacing)
+				if(VillageInfo.disableDepth)
+					GlStateManager.disableDepth();
+				GlStateManager.disableLighting();
+				GlStateManager.disableTexture2D();
 				{
-					buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-					buffer.pos(0f, y, 0f).color(0f, 1f, 0f, 1f).endVertex();
-					buffer.pos(0f, y, (maxZ - minZ)).color(0f, 1f, 0f, 1f).endVertex();
-					buffer.pos((maxX - minX), y, (maxZ - minZ)).color(0f, 1f, 0f, 1f).endVertex();
-					buffer.pos((maxX - minX), y, 0f).color(0f, 1f, 0f, 1f).endVertex();
-					buffer.pos(0, y, 0).color(0f, 1f, 0f, 1f).endVertex();
+					int spacing = 16;
+					for (int y = 0; y <= 256; y += spacing)
+					{
+						buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+						buffer.pos(0f, y, 0f).color(0f, 1f, 0f, 1f).endVertex();
+						buffer.pos(0f, y, (maxZ - minZ)).color(0f, 1f, 0f, 1f).endVertex();
+						buffer.pos((maxX - minX), y, (maxZ - minZ)).color(0f, 1f, 0f, 1f).endVertex();
+						buffer.pos((maxX - minX), y, 0f).color(0f, 1f, 0f, 1f).endVertex();
+						buffer.pos(0, y, 0).color(0f, 1f, 0f, 1f).endVertex();
+						Tessellator.getInstance().draw();
+					}
+
+					buffer.begin(GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+					for (int x = (maxX - minX); x <= 0; x += spacing)
+					{
+						buffer.pos(x, 0, 0f).color(1f, 0f, 0f, 1f).endVertex();
+						buffer.pos(x, 256, 0).color(1f, 0f, 0f, 1f).endVertex();
+						buffer.pos(x, 0, (maxZ - minZ)).color(1f, 0f, 0f, 1f).endVertex();
+						buffer.pos(x, 256, (maxZ - minZ)).color(1f, 0f, 0f, 1f).endVertex();
+					}
+					for (int z = (maxX - minX); z <= 0; z += spacing)
+					{
+						buffer.pos(0, 0, z).color(0f, 0f, 1f, 1f).endVertex();
+						buffer.pos(0, 256, z).color(0f, 0f, 1f, 1f).endVertex();
+						buffer.pos((maxX - minX), 0, z).color(0f, 0f, 1f, 1f).endVertex();
+						buffer.pos((maxX - minX), 256, z).color(0f, 0f, 1f, 1f).endVertex();
+					}
 					Tessellator.getInstance().draw();
 				}
-
-				buffer.begin(GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-				for (int x = (maxX - minX); x <= 0; x += spacing)
-				{
-					buffer.pos(x, 0, 0f).color(1f, 0f, 0f, 1f).endVertex();
-					buffer.pos(x, 256, 0).color(1f, 0f, 0f, 1f).endVertex();
-					buffer.pos(x, 0, (maxZ - minZ)).color(1f, 0f, 0f, 1f).endVertex();
-					buffer.pos(x, 256, (maxZ - minZ)).color(1f, 0f, 0f, 1f).endVertex();
-				}
-				for (int z = (maxX - minX); z <= 0; z += spacing)
-				{
-					buffer.pos(0, 0, z).color(0f, 0f, 1f, 1f).endVertex();
-					buffer.pos(0, 256, z).color(0f, 0f, 1f, 1f).endVertex();
-					buffer.pos((maxX - minX), 0, z).color(0f, 0f, 1f, 1f).endVertex();
-					buffer.pos((maxX - minX), 256, z).color(0f, 0f, 1f, 1f).endVertex();
-				}
-				Tessellator.getInstance().draw();
+				if(VillageInfo.disableDepth)
+					GlStateManager.enableDepth();
+				GlStateManager.enableLighting();
+				GlStateManager.enableTexture2D();
 			}
-			GlStateManager.enableLighting();
-			GlStateManager.enableTexture2D();
+			GlStateManager.popMatrix();
 		}
-		GlStateManager.popMatrix();
-	}
-
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void onKeyInput(InputEvent.KeyInputEvent event)
-	{
-		if(KeyBindings.SPAWNCHUNK.isPressed())
+		else
 		{
-			showSpawnChunks = !showSpawnChunks;
-			if (spawnPoint == null)
+			GlStateManager.pushMatrix();
 			{
-				spawnPoint = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getSpawnPoint();
-				if (!chatMessageShown)
+				GlStateManager.translate(minX - plX,
+						0 - plY,
+						minZ - plZ);
+				GlStateManager.glLineWidth(1);
+				GlStateManager.disableLighting();
+				GlStateManager.disableTexture2D();
+				if(VillageInfo.disableDepth)
+					GlStateManager.disableDepth();
+				GlStateManager.disableCull();
+				GlStateManager.enableBlend();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				{
-					EntityPlayerSP playerSP = Minecraft.getMinecraft().thePlayer;
-					if (playerSP != null)
-					{
-						ITextComponent textComponent = new TextComponentString("Spawn Point : " + TextFormatting.DARK_RED + spawnPoint.getX() + ", " + spawnPoint.getY() + ", " + spawnPoint.getZ());
-						playerSP.addChatMessage(textComponent);
-						chatMessageShown = true;
-					}
+					buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+					float opacity = 0.11f;
+					buffer.pos(0f, 0f, 0f).color(0f, 0f, 1f, opacity).endVertex();
+					buffer.pos((maxX - minX), 0f, 0f).color(0f, 0f, 1f, opacity).endVertex();
+					buffer.pos((maxX - minX), 256f, 0f).color(0f, 0f, 1f, opacity).endVertex();
+					buffer.pos(0f, 256f, 0f).color(0f, 0f, 1f, opacity).endVertex();
+
+					buffer.pos(0f, 0f, (maxZ - minZ)).color(0f, 0f, 1f, opacity).endVertex();
+					buffer.pos((maxX - minX), 0f, (maxZ - minZ)).color(0f, 0f, 1f, opacity).endVertex();
+					buffer.pos((maxX - minX), 256, (maxZ - minZ)).color(0f, 0f, 1f, opacity).endVertex();
+					buffer.pos(0, 256, (maxZ - minZ)).color(0f, 0f, 1f, opacity).endVertex();
+
+					buffer.pos(0f, 0f, 0).color(1f, 0f, 0f, opacity).endVertex();
+					buffer.pos(0, 0f, (maxZ - minZ)).color(1f, 0f, 0f, opacity).endVertex();
+					buffer.pos(0, 256, (maxZ - minZ)).color(1f, 0f, 0f, opacity).endVertex();
+					buffer.pos(0, 256, 0).color(1f, 0f, 0f, opacity).endVertex();
+
+					buffer.pos((maxX - minX), 0f, 0).color(1f, 0f, 0f, opacity).endVertex();
+					buffer.pos((maxX - minX), 0f, (maxZ - minZ)).color(1f, 0f, 0f, opacity).endVertex();
+					buffer.pos((maxX - minX), 256, (maxZ - minZ)).color(1f, 0f, 0f, opacity).endVertex();
+					buffer.pos((maxX - minX), 256, 0).color(1f, 0f, 0f, opacity).endVertex();
+
+					buffer.pos(0, 256, 0).color(0f, 1f, 0f, opacity).endVertex();
+					buffer.pos(0, 256, (maxZ - minZ)).color(0f, 1f, 0f, opacity).endVertex();
+					buffer.pos((maxX - minX), 256, (maxZ - minZ)).color(0f, 1f, 0f, opacity).endVertex();
+					buffer.pos((maxX - minX), 256, 0).color(0f, 1f, 0f, opacity).endVertex();
+
+					buffer.pos(0, 0, 0).color(0f, 1f, 0f, opacity).endVertex();
+					buffer.pos(0, 0, (maxZ - minZ)).color(0f, 1f, 0f, opacity).endVertex();
+					buffer.pos((maxX - minX), 0, (maxZ - minZ)).color(0f, 1f, 0f, opacity).endVertex();
+					buffer.pos((maxX - minX), 0, 0).color(0f, 1f, 0f, opacity).endVertex();
+					Tessellator.getInstance().draw();
 				}
+				GlStateManager.glLineWidth(1);
+				GlStateManager.disableBlend();
+				GlStateManager.enableCull();
+				if(VillageInfo.disableDepth)
+					GlStateManager.enableDepth();
+				GlStateManager.enableLighting();
+				GlStateManager.enableTexture2D();
 			}
+			GlStateManager.popMatrix();
 		}
 	}
 

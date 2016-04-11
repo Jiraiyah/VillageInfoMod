@@ -34,6 +34,16 @@ public class VillageInfo
     @SidedProxy(clientSide = Reference.CLIENT_PROXY, serverSide = Reference.COMMON_PROXY)
     public static CommonProxy PROXY;
 
+    public static boolean solidDraw;
+    public static boolean villageBorder;
+    public static boolean showVillages;
+    public static boolean villageDoors = true;
+    public static boolean villageSphere;
+    public static boolean villageGolem = true;
+    public static boolean villageInfoText;
+    public static boolean villageCenter = true;
+    public static boolean disableDepth = true;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {

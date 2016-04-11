@@ -1,9 +1,12 @@
-villageinfo.key.villagedata=Village Data
-villageinfo.key.villagedatadoors=Village Data Doors Graphic
-villageinfo.key.villagedatagolem=Village Data Golem Graphic
-villageinfo.key.villagedataborder=Village Data Border Graphic
-villageinfo.key.villagedatainfo=Village Data Info Test
-villageinfo.key.villagedatacenter=Village Data Center Graphic
-villageinfo.key.villagedatasphere=Village Data Sphere Graphic
+villageinfo.key.villagedata=Toggle Village Data
+villageinfo.key.villagedatadoors=Toggle Village Doors
+villageinfo.key.villagedatagolem=Toggle Village Golem
+villageinfo.key.villagedataborder=Toggle Village Border
+villageinfo.key.villagedatainfo=Toggle Village Info Text
+villageinfo.key.villagedatacenter=Toggle Village Center
+villageinfo.key.villagedatasphere=Toggle Village Sphere
+villageinfo.key.soliddraw=Toggle Solid Drawing
+villageinfo.key.disabledepth=Toggle Depth Disabling
+villageinfo.key.spawnchunk=Toggle Spawn Chunk Data
 
 villageinfo.key.categories=Village Info
