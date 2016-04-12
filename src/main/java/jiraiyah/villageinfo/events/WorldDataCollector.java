@@ -120,6 +120,5 @@ public class WorldDataCollector
 			VillageServerMessage.sendMessage(player, tempList);
 			//Log.info("=================> Sent village data to client");
 		}
-
 	}
 }

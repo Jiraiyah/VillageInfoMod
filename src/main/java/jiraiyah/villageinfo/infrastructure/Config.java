@@ -30,15 +30,10 @@ public class Config
 {
 	public static int updateRatio = 1;
 	public static int villageDetectDistance = 140;
-	public static boolean perVillageColor;
-
-	public static int spawnChunkShowDistance = 140;
-
-	private static final String CATEGORY_GENERIC = "Generic";
-
-	private static File configurationFile;
 	private static Configuration config;
 
+	public static int spawnChunkShowDistance = 140;
+	private static final String CATEGORY_GENERIC = "Generic";
 
 	@SubscribeEvent
 	public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
@@ -51,14 +46,13 @@ public class Config
 
 	public static void loadConfigsFromFile(File configFile)
 	{
-		configurationFile = configFile;
 		config = new Configuration(configFile, "1.0", true);
 		config.load();
 
 		loadConfigs(config);
 	}
 
-	public static void loadConfigs(Configuration conf)
+	private static void loadConfigs(Configuration conf)
 	{
 		Property prop = conf.get(CATEGORY_GENERIC, "updateRatio", 1).setRequiresMcRestart(false);
 		prop.setComment("Second intervals that server will update village information for each player, should be a position integer (obviously).");
@@ -67,10 +61,6 @@ public class Config
 		prop = conf.get(CATEGORY_GENERIC, "villageDetectDistance", 140).setRequiresMcRestart(false);
 		prop.setComment("Distance from border of the village (not the center) that server accepts for each player to show the village info for, should be positive integer.");
 		villageDetectDistance = prop.getInt();
-
-		prop = conf.get(CATEGORY_GENERIC, "perVillageColor", false).setRequiresMcRestart(false);
-		prop.setComment("If set to true, every graphical representation for single village will be in same color, but change per village base. If you have single village, set it to false for color change in the village information.");
-		perVillageColor = prop.getBoolean();
 
 		prop = conf.get(CATEGORY_GENERIC, "spawnChunkShowDistance", 250).setRequiresMcRestart(false);
 		prop.setComment("Distance from border of the spawn chunks that graphics starts showing up, should be positive (obviously).");

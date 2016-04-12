@@ -8,5 +8,7 @@ villageinfo.key.villagedatasphere=Toggle Village Sphere
 villageinfo.key.soliddraw=Toggle Solid Drawing
 villageinfo.key.disabledepth=Toggle Depth Disabling
 villageinfo.key.spawnchunk=Toggle Spawn Chunk Data
+villageinfo.key.pervillagecolor=Toggle Per Village Coloring
+villageinfo.key.chunkborder=Toggle Chunk Border
 
 villageinfo.key.categories=Village Info

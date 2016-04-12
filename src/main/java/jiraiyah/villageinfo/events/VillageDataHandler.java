@@ -18,7 +18,6 @@
 package jiraiyah.villageinfo.events;
 
 import jiraiyah.villageinfo.VillageInfo;
-import jiraiyah.villageinfo.infrastructure.Config;
 import jiraiyah.villageinfo.infrastructure.VillageData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -47,6 +46,16 @@ public class VillageDataHandler
 	private static final float PI = (float) Math.PI;
 	private static final float DEG2RAD = PI/180;
 
+	private static final Vector4f[] COLORS =
+			{
+				new Vector4f(1f, 1f, 1f, 1f),
+				new Vector4f(1f, 0f, 0f, 1f),
+				new Vector4f(0f, 1f, 0f, 1f),
+				new Vector4f(0f, 0f, 1f, 1f),
+				new Vector4f(1f, 1f, 0f, 1f),
+				new Vector4f(0f, 1f, 1f, 1f),
+				new Vector4f(1f, 0f, 1f, 1f)
+			};
 
 	@SubscribeEvent
 	public void renderWorldLastEvent(RenderWorldLastEvent event)
@@ -62,11 +71,12 @@ public class VillageDataHandler
 		Vec3d playerPos = new Vec3d(plX, plY, plZ);
 		RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
 		FontRenderer fontrenderer = renderManager.getFontRenderer();
+		int cnt = 0;
 		for (VillageData data : villageDataList)
 		{
 			double distance = Math.sqrt(playerPos.squareDistanceTo(data.center.getX(), data.center.getY(), data.center.getZ()));
 			double scaleFactor = -0.015f * distance / 4.209f;
-			boolean canSpaw = data.doorPositions.size() > 20;
+			boolean canSpawn = data.doorPositions.size() > 20;
 			GlStateManager.pushMatrix();
 			{
 				GlStateManager.translate(0.5f + data.center.getX() - plX,
@@ -81,17 +91,16 @@ public class VillageDataHandler
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				{
-					// TODO : per village coloring
 					if (VillageInfo.villageSphere)
-						drawBorderSpehere(data.radius, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 1f, 1f) : new Vector4f(1f, 0f, 1f, 1f));
+						drawBorderSpehere(data.radius, 16, 64, buffer, VillageInfo.perVillageColor ? COLORS[cnt % COLORS.length] : new Vector4f(1f, 0f, 1f, 1f));
 					if (VillageInfo.villageDoors)
-						drawDoors(data.center, data.doorPositions, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : new Vector4f(1f, 1f, 1f, 1f));
+						drawDoors(data.center, data.doorPositions, buffer, VillageInfo.perVillageColor ? COLORS[cnt % COLORS.length] : new Vector4f(1f, 1f, 1f, 1f));
 					if (VillageInfo.villageBorder)
-						drawBorderSquare(data.radius, buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : new Vector4f(1f, 1f, 0f, 0.5f));
+						drawBorderSquare(data.radius, buffer, VillageInfo.perVillageColor ? COLORS[cnt % COLORS.length] : new Vector4f(1f, 1f, 0f, 0.5f));
 					if (VillageInfo.villageGolem)
-						drawGolemSpawn(buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : (canSpaw ? new Vector4f(0f, 1f, 0f, 1f) : new Vector4f(0.8f, 0f, 0f, 1f)));
+						drawGolemSpawn(buffer, VillageInfo.perVillageColor ? COLORS[cnt % COLORS.length] : (canSpawn ? new Vector4f(0f, 1f, 0f, 1f) : new Vector4f(0.8f, 0f, 0f, 1f)));
 					if (VillageInfo.villageCenter)
-						drawCenter(buffer, Config.perVillageColor ? new Vector4f(1f, 0f, 0f, 1f) : new Vector4f(1f, 0f, 0f, 1f));
+						drawCenter(buffer, VillageInfo.perVillageColor ? COLORS[cnt % COLORS.length] : new Vector4f(1f, 0f, 0f, 1f));
 					if (VillageInfo.villageInfoText)
 					{
 						GlStateManager.translate(0f, 1.5f, 0f);
@@ -104,7 +113,7 @@ public class VillageDataHandler
 						GlStateManager.enableTexture2D();
 						drawTextInfo("Villagers : " + data.villagerCount, 1, scaleFactor, fontrenderer);
 						drawTextInfo("Doors : " + data.doorPositions.size(), 2, scaleFactor, fontrenderer);
-						drawTextInfo("Max Golem : " + (canSpaw ? (TextFormatting.GREEN + Integer.toString(data.villagerCount / 10)) : TextFormatting.DARK_RED + "" + TextFormatting.BOLD + "0"), 3, scaleFactor, fontrenderer);
+						drawTextInfo("Max Golem : " + (canSpawn ? (TextFormatting.GREEN + Integer.toString(data.villagerCount / 10)) : TextFormatting.DARK_RED + "" + TextFormatting.BOLD + "0"), 3, scaleFactor, fontrenderer);
 						drawTextInfo("Reputation : " + data.reputation, 4, scaleFactor, fontrenderer);
 						GlStateManager.disableBlend();
 					}
@@ -118,6 +127,7 @@ public class VillageDataHandler
 				GlStateManager.enableLighting();
 			}
 			GlStateManager.popMatrix();
+			cnt++;
 		}
 	}
 
@@ -286,50 +296,27 @@ public class VillageDataHandler
 		Tessellator.getInstance().draw();
 	}
 
-	private void drawBorderSpehere(int radius, VertexBuffer buffer, Vector4f color)
+	private void drawBorderSpehere(int radius, int spokes, int smoothness, VertexBuffer buffer, Vector4f color)
 	{
-		// TODO : another, clearner algorithm to draw sphere !
-		int space = 5;
-		int upper = 90;
-		int upper2 = 360 - space;
-		double x, y, z;
-		for (int b = -space; b <= upper; b += space)
-		{
+		for(int i = 0; i < spokes; i++) {
+			double iAngle = ((double) i / spokes) * Math.PI;
 			buffer.begin(GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
-			for (int a = 0; a <= upper2; a++)
-			{
-				x = radius * Math.sin((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
-				z = radius * Math.cos((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
-				y = radius * Math.cos((b) * DEG2RAD);
-				buffer.pos(x, y, z).color(color.x, color.y, color.z, color.w).endVertex();
+			for(int a = 0; a < smoothness; a++) {
+				double aAngle = ((double) a / smoothness) * Math.PI * 2;
+				buffer.pos(Math.cos(aAngle) * Math.cos(iAngle) * radius,
+						Math.sin(aAngle) * radius,
+						Math.cos(aAngle) * -Math.sin(iAngle) * radius).color(color.x, color.y, color.z, color.w).endVertex();
 			}
 			Tessellator.getInstance().draw();
 		}
-		upper = 180 - space;
-		upper2 = 90;
-		for (int b = 0; b <= upper; b += space)
-		{
-			buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-			for (int a = -90; a <= upper2; a++)
-			{
-				x = radius * Math.sin((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
-				z = radius * Math.cos((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
-				y = radius * Math.cos((b) * DEG2RAD);
-				buffer.pos(x, z, y).color(color.x, color.y, color.z, color.w).endVertex();
-			}
-			Tessellator.getInstance().draw();
-		}
-		upper = 180 - space;
-		upper2 = 90;
-		for (int b = 0; b <= upper; b += space)
-		{
-			buffer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-			for (int a = -90; a <= upper2; a++)
-			{
-				x = radius * Math.sin((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
-				z = radius * Math.cos((a) * DEG2RAD) * Math.sin((b) * DEG2RAD);
-				y = radius * Math.cos((b) * DEG2RAD);
-				buffer.pos(y, z, x).color(color.x, color.y, color.z, color.w).endVertex();
+		for(int i = 0; i < spokes; i++) {
+			double iAngle = ((double) i / spokes) * Math.PI;
+			buffer.begin(GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
+			for(int a = 0; a < smoothness; a++) {
+				double aAngle = ((double) a / smoothness) * Math.PI * 2;
+				buffer.pos(Math.sin(aAngle) * Math.sin(iAngle) * radius,
+						Math.cos(iAngle) * radius,
+						Math.cos(aAngle) * Math.sin(iAngle) * radius).color(color.x, color.y, color.z, color.w).endVertex();
 			}
 			Tessellator.getInstance().draw();
 		}

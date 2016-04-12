@@ -43,6 +43,8 @@ public class VillageInfo
     public static boolean villageInfoText;
     public static boolean villageCenter = true;
     public static boolean disableDepth = true;
+    public static boolean perVillageColor;
+    public static boolean chunkBorder;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)

@@ -33,7 +33,9 @@ public class KeyBindings
 	public static KeyBinding VILLAGE_DATA_DOORS;
 	public static KeyBinding VILLAGE_DATA_INFO;
 	public static KeyBinding VILLAGE_DATA_CENTER;
+	public static KeyBinding VILLAGE_PER_COLOR;
 	public static KeyBinding SPAWN_CHUNK;
+	public static KeyBinding CHUNK_BORDER;
 	public static KeyBinding SOLID_DRAW;
 	public static KeyBinding Disable_DEPTH;
 
@@ -49,10 +51,11 @@ public class KeyBindings
 		VILLAGE_DATA_SPHERE = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.villagedatasphere", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_6, Reference.MOD_ID.toLowerCase() + ".key.categories");
 		SOLID_DRAW = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.soliddraw", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_7, Reference.MOD_ID.toLowerCase() + ".key.categories");
 		Disable_DEPTH = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.disabledepth", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_8, Reference.MOD_ID.toLowerCase() + ".key.categories");
+		VILLAGE_PER_COLOR = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.pervillagecolor", KeyConflictContext.IN_GAME, KeyModifier.CONTROL, Keyboard.KEY_9, Reference.MOD_ID.toLowerCase() + ".key.categories");
 		SPAWN_CHUNK = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.spawnchunk", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.MOD_ID.toLowerCase() + ".key.categories");
+		CHUNK_BORDER = new KeyBinding(Reference.MOD_ID.toLowerCase() + ".key.chunkborder", KeyConflictContext.IN_GAME, Keyboard.KEY_F6, Reference.MOD_ID.toLowerCase() + ".key.categories");
 
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA);
-
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA_DOORS);
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA_GOLEM);
 		ClientRegistry.registerKeyBinding(VILLAGE_DATA_BORDER);
@@ -62,6 +65,8 @@ public class KeyBindings
 		ClientRegistry.registerKeyBinding(SPAWN_CHUNK);
 		ClientRegistry.registerKeyBinding(SOLID_DRAW);
 		ClientRegistry.registerKeyBinding(Disable_DEPTH);
+		ClientRegistry.registerKeyBinding(VILLAGE_PER_COLOR);
+		ClientRegistry.registerKeyBinding(CHUNK_BORDER);
 
 		//Log.info("=========================================================> Registered Key Bindings");
 	}

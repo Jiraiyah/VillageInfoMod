@@ -37,26 +37,9 @@ public class VillageServerMessage implements IMessageHandler<VillageServerMessag
 	@Override
 	public IMessage onMessage (VillageServerMessage.Packet message, MessageContext ctx )
 	{
-        /*Minecraft.getMinecraft().addScheduledTask( () ->
-                ((VillageIndicatorTile)Minecraft
-                        .getMinecraft()
-                        .theWorld
-                        .getTileEntity(message.entityPos))
-                        .UpdateDataFromServer(message.data));*/
 		VillageDataHandler.setVillageData(message.data);
 		return null;
 	}
-
-    /*public static void sendMessage(MinecraftServer minecraftServer, List<VillageData> data, BlockPos pos)
-    {
-        Packet packet = new Packet(data, pos);
-        for (EntityPlayerMP player : minecraftServer.getPlayerList().getPlayerList())
-        {
-            BlockPos playerPosition = player.getPosition();
-            if (pos.distanceSq(playerPosition) < 100 * 100)
-                    NetworkMessages.network.sendTo(packet, player);
-        }
-    }*/
 
 	public static void sendMessage(UUID player, List<VillageData> data)
 	{

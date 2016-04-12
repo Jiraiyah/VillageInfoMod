@@ -43,6 +43,10 @@ public class KeyBindingHandler
 			VillageInfo.solidDraw = !VillageInfo.solidDraw;
 		if (KeyBindings.Disable_DEPTH.isPressed())
 			VillageInfo.disableDepth = !VillageInfo.disableDepth;
+		if (KeyBindings.VILLAGE_PER_COLOR.isPressed())
+			VillageInfo.perVillageColor = !VillageInfo.perVillageColor;
+		if (KeyBindings.CHUNK_BORDER.isPressed())
+			VillageInfo.chunkBorder = !VillageInfo.chunkBorder;
 		if(KeyBindings.SPAWN_CHUNK.isPressed())
 		{
 			WorldSpawnHandler.showSpawnChunks = !WorldSpawnHandler.showSpawnChunks;
