@@ -17,8 +17,10 @@
  */
 package jiraiyah.villageinfo.inits;
 
-import jiraiyah.villageinfo.network.VillageServerMessage;
+import jiraiyah.villageinfo.network.SpawnPlayerMessage;
+import jiraiyah.villageinfo.network.SpawnServerMessage;
 import jiraiyah.villageinfo.network.VillagePlayerMessage;
+import jiraiyah.villageinfo.network.VillageServerMessage;
 import jiraiyah.villageinfo.references.Reference;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -32,6 +34,8 @@ public class NetworkMessages
 		network = new SimpleNetworkWrapper( Reference.MOD_ID );
 		network.registerMessage( VillageServerMessage.class, VillageServerMessage.Packet.class, nextId(), Side.CLIENT );
 		network.registerMessage( VillagePlayerMessage.class, VillagePlayerMessage.Packet.class, nextId(), Side.SERVER );
+		network.registerMessage( SpawnServerMessage.class, SpawnServerMessage.Packet.class, nextId(), Side.CLIENT );
+		network.registerMessage( SpawnPlayerMessage.class, SpawnPlayerMessage.Packet.class, nextId(), Side.SERVER );
 		//Log.info("=========================================================> Registered Network Messages");
 	}
 

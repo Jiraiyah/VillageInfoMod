@@ -1,14 +1,27 @@
+/**
+ * Copyright 2016 VillageInfoMod (Jiraiyah)
+ *
+ * project link : http://minecraft.curseforge.com/projects/village-info
+ *
+ * Licensed under The MIT License (MIT);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://opensource.org/licenses/MIT
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jiraiyah.villageinfo.events;
 
 import jiraiyah.villageinfo.VillageInfo;
 import jiraiyah.villageinfo.inits.KeyBindings;
+import jiraiyah.villageinfo.network.SpawnPlayerMessage;
 import jiraiyah.villageinfo.network.VillagePlayerMessage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -50,20 +63,7 @@ public class KeyBindingHandler
 		if(KeyBindings.SPAWN_CHUNK.isPressed())
 		{
 			WorldSpawnHandler.showSpawnChunks = !WorldSpawnHandler.showSpawnChunks;
-			if (WorldSpawnHandler.spawnPoint == null)
-			{
-				WorldSpawnHandler.spawnPoint = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getSpawnPoint();
-				if (!WorldSpawnHandler.chatMessageShown)
-				{
-					EntityPlayerSP playerSP = Minecraft.getMinecraft().thePlayer;
-					if (playerSP != null)
-					{
-						ITextComponent textComponent = new TextComponentString("Spawn Point : " + TextFormatting.DARK_RED + WorldSpawnHandler.spawnPoint.getX() + ", " + WorldSpawnHandler.spawnPoint.getY() + ", " + WorldSpawnHandler.spawnPoint.getZ());
-						playerSP.addChatMessage(textComponent);
-						WorldSpawnHandler.chatMessageShown = true;
-					}
-				}
-			}
+			SpawnPlayerMessage.sendMessage(Minecraft.getMinecraft().thePlayer.getUniqueID());
 		}
 	}
 }

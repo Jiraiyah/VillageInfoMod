@@ -27,14 +27,14 @@ import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -42,19 +42,26 @@ import static org.lwjgl.opengl.GL11.*;
 public class WorldSpawnHandler
 {
 	static boolean showSpawnChunks;
-	static BlockPos spawnPoint = null;
-	static boolean chatMessageShown;
-	private Set<Chunk> spawnChunks = new HashSet<>();
+	private static BlockPos spawnPoint = null;
+	private static boolean chatMessageShown;
+	private static List<Integer> xCoords = new ArrayList<>();
+	private static List<Integer> zCoords = new ArrayList<>();
 
 	@SubscribeEvent
 	public void renderWorldLastEvent(RenderWorldLastEvent event)
 	{
-		if (spawnPoint == null || !showSpawnChunks)
+		if (!showSpawnChunks || spawnPoint == null || xCoords == null || zCoords == null || xCoords.size() == 0 || zCoords.size() == 0)
 			return;
-		if (spawnChunks == null || spawnChunks.size() == 0)
-			spawnChunks = getSpawnChunks();
-		if (spawnChunks == null || spawnChunks.size() == 0)
-			return;
+		if (!chatMessageShown)
+		{
+			EntityPlayerSP playerSP = Minecraft.getMinecraft().thePlayer;
+			if (playerSP != null)
+			{
+				ITextComponent textComponent = new TextComponentString("Spawn Point : " + TextFormatting.DARK_RED + WorldSpawnHandler.spawnPoint.getX() + ", " + WorldSpawnHandler.spawnPoint.getY() + ", " + WorldSpawnHandler.spawnPoint.getZ());
+				playerSP.addChatMessage(textComponent);
+				chatMessageShown = true;
+			}
+		}
 		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
 		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 		float ticks = event.getPartialTicks();
@@ -67,10 +74,10 @@ public class WorldSpawnHandler
 		if (distance > Config.spawnChunkShowDistance)
 			return;
 		int minX = Integer.MIN_VALUE, minZ = Integer.MIN_VALUE, maxX = Integer.MAX_VALUE, maxZ = Integer.MAX_VALUE;
-		for (Chunk chunk : spawnChunks)
+		for (int i = 0; i < xCoords.size(); i++)
 		{
-			int finalX = (Math.abs(chunk.xPosition * 16) + 16) * (int) Math.signum(chunk.xPosition);
-			int finalZ = (Math.abs(chunk.zPosition * 16) + 16) * (int) Math.signum(chunk.zPosition);
+			int finalX = (Math.abs(xCoords.get(i) * 16) + 16) * (int) Math.signum(xCoords.get(i));
+			int finalZ = (Math.abs(zCoords.get(i) * 16) + 16) * (int) Math.signum(zCoords.get(i));
 			if (minX < finalX)
 				minX = finalX;
 			if (maxX > finalX)
@@ -190,22 +197,10 @@ public class WorldSpawnHandler
 		}
 	}
 
-	private Set<Chunk> getSpawnChunks()
+	public static void setSpawnInformation(BlockPos sp, List<Integer> x, List<Integer> z)
 	{
-		Set<Chunk> temp = new HashSet<>();
-		IChunkProvider chunkProvider = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getChunkProvider();
-		for (int x = spawnPoint.getX() - 256; x < spawnPoint.getX() + 256; x++)
-		{
-			for (int z = spawnPoint.getZ() - 256; z < spawnPoint.getZ() + 256; z++)
-			{
-				BlockPos tempPos = new BlockPos(x,0,z);
-				Chunk chunk = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getChunkFromBlockCoords(tempPos);
-				if (FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isSpawnChunk(chunk.xPosition, chunk.zPosition))
-				{
-					temp.add(chunk);
-				}
-			}
-		}
-		return temp;
+		spawnPoint = sp;
+		xCoords = x;
+		zCoords = z;
 	}
 }

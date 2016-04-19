@@ -19,6 +19,7 @@ package jiraiyah.villageinfo.events;
 
 import jiraiyah.villageinfo.infrastructure.Config;
 import jiraiyah.villageinfo.infrastructure.VillageData;
+import jiraiyah.villageinfo.network.SpawnServerMessage;
 import jiraiyah.villageinfo.network.VillageServerMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -26,6 +27,9 @@ import net.minecraft.village.Village;
 import net.minecraft.village.VillageCollection;
 import net.minecraft.village.VillageDoorInfo;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -42,6 +46,8 @@ public class WorldDataCollector
 	private static List<UUID> VILLAGE_INFO_PLAYERS = new ArrayList<>();
 	private static Map<UUID, List<VillageData>> villageDataList = new HashMap<>();
 	private static BlockPos spawnPoint = null;
+	private static List<Integer> xCoords = new ArrayList<>();
+	private static List<Integer> zCoords = new ArrayList<>();
 
 	@SubscribeEvent
 	public void serverTickEvent(TickEvent.ServerTickEvent event)
@@ -53,6 +59,45 @@ public class WorldDataCollector
 		if (VILLAGE_INFO_PLAYERS == null || VILLAGE_INFO_PLAYERS.size() == 0)
 			return;
 		resetVillageDataList();
+	}
+
+	@SubscribeEvent
+	public void worldLoadEvent(WorldEvent.Load event)
+	{
+		if (spawnPoint == null)
+			getSpawnPoint();
+		if (xCoords == null || zCoords == null || xCoords.size() == 0 || zCoords.size() == 0)
+			getSpawnChunks();
+	}
+
+	private static void getSpawnChunks()
+	{
+		boolean foundFirstChunk = false;
+		int cnt = 1;
+		IChunkProvider chunkProvider = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getChunkProvider();
+		for (int x = spawnPoint.getX() - 256; x < spawnPoint.getX() + 256; x += cnt)
+		{
+			for (int z = spawnPoint.getZ() - 256; z < spawnPoint.getZ() + 256; z += cnt)
+			{
+				BlockPos tempPos = new BlockPos(x,0,z);
+				Chunk chunk = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getChunkFromBlockCoords(tempPos);
+				if (FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().isSpawnChunk(chunk.xPosition, chunk.zPosition))
+				{
+					if (!foundFirstChunk)
+					{
+						foundFirstChunk = true;
+						cnt = 16;
+					}
+					xCoords.add(chunk.xPosition);
+					zCoords.add(chunk.zPosition);
+				}
+			}
+		}
+	}
+
+	private static void getSpawnPoint()
+	{
+		spawnPoint = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getSpawnPoint();
 	}
 
 	@SubscribeEvent
@@ -120,5 +165,11 @@ public class WorldDataCollector
 			VillageServerMessage.sendMessage(player, tempList);
 			//Log.info("=================> Sent village data to client");
 		}
+	}
+
+	public static void getSpawnInformation(UUID playerId)
+	{
+
+		SpawnServerMessage.sendMessage(playerId, spawnPoint, xCoords,zCoords);
 	}
 }
